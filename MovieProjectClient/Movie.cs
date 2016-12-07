@@ -97,11 +97,11 @@ namespace MovieModel
         public string MovieNow(TimeSpan ShowTime)
         {
             int compareValue = ShowTime.CompareTo(DateTime.Now.TimeOfDay);
-            if (compareValue < 0)
+            if (compareValue < 0)                                                      //Time is in the past
                 return "Next movie tomorrow at: " + ShowTime;
-            else if (compareValue == 0)
+            else if (compareValue == 0)                                                //Time is now
                 return "Movie is now: " + ShowTime;
-            else // compareValue > 0
+            else // compareValue > 0                                                   //Time is in the future
                 return "Movie is later today at: " + ShowTime;
         }
 

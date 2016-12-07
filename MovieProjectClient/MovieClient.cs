@@ -343,7 +343,7 @@ namespace MovieProjectClient
                         Console.WriteLine("\n" + s.Description + " \n");
                         //Console.Write("Now showing at {0} Cinema{1}. ", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                         Console.WriteLine("Program starts " + showtime + ". Running Time: " + s.RunTime + " mins.");
-                        Console.WriteLine("Next performance " + s.MovieNow(s.ShowTime));
+                        Console.WriteLine(s.MovieNow(s.ShowTime));
                     }
                     else
                     {

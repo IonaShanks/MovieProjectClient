@@ -98,11 +98,11 @@ namespace MovieModel
         {
             int compareValue = ShowTime.CompareTo(DateTime.Now.TimeOfDay);
             if (compareValue < 0)                                                      //Time is in the past
-                return "Next movie tomorrow at: " + ShowTime;
+                return "Next showing is tomorrow at: " + ShowTime;
             else if (compareValue == 0)                                                //Time is now
-                return "Movie is now: " + ShowTime;
+                return "Next showing is now: " + ShowTime;
             else // compareValue > 0                                                   //Time is in the future
-                return "Movie is later today at: " + ShowTime;
+                return "Next showing is later today at: " + ShowTime;
         }
 
         [JsonIgnore]

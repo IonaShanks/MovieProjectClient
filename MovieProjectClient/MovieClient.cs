@@ -12,6 +12,8 @@ namespace MovieProjectClient
 {
     public static class Menu
     {
+        const int MAXKEY = 9;
+
         public static string FrontEnd()
         {
             Menu.DisplayBox("Cinema Listings App", 11);
@@ -41,44 +43,88 @@ namespace MovieProjectClient
             return (choice.Key.ToString());
         }
 
-        public static int NumberInput(List<string> menuTags, int colour, int range)
-        {
-            if (range == 0)                         // zero flag to print and count options if not already displayed
-            {
-                range = menuTags.Count();
-                for (int i = 0; i < range; i++)
-                {
-                    Console.WriteLine("[{0}] {1}", i + 1, menuTags[i]);
-                }
-            }
-            Console.Write("\n\t");
-            Console.ForegroundColor = (ConsoleColor)colour;
-            Console.Write("Press a key to select an option: ");
-            Console.ResetColor();
 
+        public delegate int UserInputMethod(int range);
+
+        public static int UserInputReturn(int range, UserInputMethod keyb)
+        {
+            return keyb(range);
+        }
+
+        public static int UserInputPrompt(int range, int colour)
+        {
+            Console.ForegroundColor = (ConsoleColor)colour;
+            int choice = 0;
+            if (range > MAXKEY)
+            {
+                choice = UserInputReturn(range, InputLine);
+            }
+            else
+            {
+                choice = UserInputReturn(range, InputKey);
+            }
+            Console.ResetColor();
+            return choice;
+        }
+
+
+        // Delegate method 1 - only works for integers between 0 & 10 exclusive
+        public static int InputKey(int range)
+        {
+            Console.Write("\n\tPress a key to select an option: ");
             // remember that return value is an indexer, so option [1] is index [0]
-            int numTag = 0;
+            int num = 0;
 
             do
             {
                 ConsoleKeyInfo choice = Console.ReadKey(true);
                 if (Char.IsNumber(choice.KeyChar))
                 {
-                    Int32.TryParse(choice.KeyChar.ToString(), out numTag);     //safer way of parsing number from string
+                    Int32.TryParse(choice.KeyChar.ToString(), out num);     //parsing number from string
                 };
-            } while (numTag < 1 || numTag > range);                             // needs to go alphanumeric / hex if over 9 entries TO DO
-
-            return (numTag - 1);
+            } while (num < 1 || num > range);
+            Console.WriteLine(num);
+            return (num - 1);
         }
 
-        public static string UserInput(string query)
+        // Delegate method 2 - for number inputs over MAXPERPAGE
+        public static int InputLine(int range)
         {
-            string choice = "Go!";
+            // remember that return value is an indexer, so option [1] is index [0]
+            int num = 0;
+            bool isNum;
+            Console.Write("\n\tType the option number and hit enter: ");
+            int origRow = Console.CursorTop;
+            int origCol = Console.CursorLeft;
+
             do
             {
-                Console.Write("\n" + query + " ");
+                string choice = Console.ReadLine();
+                isNum = Int32.TryParse(choice, out num);                        //safer way of parsing number from string
+                Console.SetCursorPosition(origCol, origRow);
+                Console.Write("                          ");
+                Console.SetCursorPosition(origCol, origRow);
+            } while ((num < 1 || num > range) || !isNum);
+
+            Console.WriteLine(num);
+            return (num - 1);
+        }
+
+
+        public static string UserTextInput(string query, int colour)
+        {
+            string choice = "";
+            Console.ForegroundColor = (ConsoleColor)colour;
+            Console.Write("\n {0}", query);
+            int origRow = Console.CursorTop;
+            int origCol = Console.CursorLeft;
+            do
+            {
                 choice = Console.ReadLine();
+                Console.SetCursorPosition(origCol, origRow);
             } while (choice == "");
+            Console.ResetColor();
+            Console.WriteLine(choice + "\n");
             return choice;
         }
 
@@ -88,6 +134,17 @@ namespace MovieProjectClient
             Console.Write("_______________________________________\n\n\t");
             Console.WriteLine(title + "\n_______________________________________\n");
             Console.ResetColor();
+        }
+
+        public static void DisplayOptions(List<string> entries)
+        {
+            {
+                int range = entries.Count();
+                for (int i = 0; i < range; i++)
+                {
+                    Console.WriteLine("[{0}] {1}", i + 1, entries[i]);
+                }
+            }
         }
     }
 
@@ -296,8 +353,7 @@ namespace MovieProjectClient
                     if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
-
-                        Console.WriteLine("\nThis movie is currently showing at ");
+                        Console.WriteLine("\nThis movie is currently showing at...");
                         var venues = await response.Content.ReadAsAsync<IEnumerable<Cinema>>();
                         foreach (var v in venues)
                         {
@@ -336,13 +392,13 @@ namespace MovieProjectClient
                     {
                         // read result
                         var s = await response.Content.ReadAsAsync<Movie>();
-                        Menu.DisplayBox(s.Title, 13);
+                        Menu.DisplayBox(s.Title, 11);
                         string cert = "Certificate: " + s.Certification.ToString().Substring("IFCO".Length);
                         string showtime = s.ShowTime.ToString().Remove(5);
                         Console.WriteLine(cert + "   Genre: " + s.Genre.ToString());
                         Console.WriteLine("\n" + s.Description + " \n");
                         //Console.Write("Now showing at {0} Cinema{1}. ", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
-                        Console.WriteLine("Program starts " + showtime + ". Running Time: " + s.RunTime + " mins.");
+                        Console.WriteLine("Program starts " + showtime + ". Running Time: " + s.RunTime + " mins.\n");
                         Console.WriteLine(s.MovieNow(s.ShowTime));
                     }
                     else
@@ -357,7 +413,9 @@ namespace MovieProjectClient
             }
 
             // call screenings before returning
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
             GetMovieScreenings(id).Wait();
+            Console.ResetColor();
         }
 
         // GET to find a movie by genre
@@ -384,7 +442,7 @@ namespace MovieProjectClient
                         {
                             string cert = s.Certification.ToString().Substring("IFCO".Length);
                             string showtime = s.ShowTime.ToString().Remove(5);
-                            Console.Write("Movie: " + s.Title + " " + cert + " " + showtime + " ");
+                            Console.WriteLine("Movie: " + s.Title + " " + cert + " " + showtime + " ");
                             //Console.WriteLine(" Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                         }
                     }
@@ -419,7 +477,7 @@ namespace MovieProjectClient
                     if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
-                        Menu.DisplayBox("Movie Search", 6);
+                        Menu.DisplayBox("Movie Search for '" + id + "'", 6);
                         var screenings = await response.Content.ReadAsAsync<IEnumerable<Movie>>();
 
                         if (screenings.Count() != 0)
@@ -429,7 +487,7 @@ namespace MovieProjectClient
                             {
                                 string cert = s.Certification.ToString().Substring("IFCO".Length);
                                 string showtime = s.ShowTime.ToString().Remove(5);
-                                Console.Write("Movie: " + s.Title + "\tRating: " + cert + " \tNext screening " + showtime);
+                                Console.WriteLine("Movie: " + s.Title + "\tRating: " + cert + " \tNext screening " + showtime);
                                 //Console.WriteLine("\t Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                             }
                         }
@@ -469,47 +527,46 @@ namespace MovieProjectClient
 
         static async Task RunAsync(string path)
         {
+            Console.Clear();
+
             switch (path)
             {
                 case "C":
-                    Console.Clear();
                     List<string> allVenues = await GetAllCinemasAsync();
-                    int venue = Menu.NumberInput(allVenues, 11, allVenues.Count);
+                    int venue = Menu.UserInputPrompt(allVenues.Count, 11);
                     Console.Clear();
                     GetCinemaAsync(allVenues[venue]).Wait();
                     break;
 
                 case "M":
-                    Console.Clear();
                     List<string> allMovies = await GetAllMoviesAsync();
-                    int show = Menu.NumberInput(allMovies, 6, allMovies.Count);
+                    int show = Menu.UserInputPrompt(allMovies.Count, 6);
                     Console.Clear();
                     GetMovieAsync(allMovies[show]).Wait();
                     break;
 
                 case "F":
-                    Console.Clear();
-                    string cSearch = Menu.UserInput("Please enter a search term for the cinema:");
+                    Menu.DisplayBox("Find a venue", 11);
+                    string cSearch = Menu.UserTextInput("Please enter a search term for the cinema: ", 11);
                     GetCinemasBySearchAsync(cSearch).Wait();
                     break;
 
                 case "S":
-                    Console.Clear();
-                    string mSearch = Menu.UserInput("Please enter a search term for the movie title:");
+                    Menu.DisplayBox("Search By Title", 6);
+                    string mSearch = Menu.UserTextInput("Please enter a search term for the movie title: ", 6);
                     GetMoviesBySearchTermAsync(mSearch).Wait();
                     break;
 
                 case "G":
-                    Console.Clear();
                     Menu.DisplayBox("Movies by genre", 6);
                     List<string> genres = new List<string> { "Horror", "Comedy", "Fantasy", "Action", "Family", "Romance" };
-                    int gSearch = Menu.NumberInput(genres, 6, 0);
+                    Menu.DisplayOptions(genres);
+                    int gSearch = Menu.UserInputPrompt(genres.Count, 6);
                     Console.WriteLine("\n\n");
                     GetMoviesByGenreAsync(gSearch).Wait();
                     break;
 
                 case "X":
-                    Console.Clear();
                     Console.WriteLine("Quitting application...");
                     break;
             }
@@ -517,3 +574,5 @@ namespace MovieProjectClient
         }
     }
 }
+
+// Maintainability Index 87 (Green), Cyclo Complexity 75, Inheritance Depth 1, Class Coupling 36

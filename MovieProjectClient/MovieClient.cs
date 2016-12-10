@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 
@@ -16,9 +15,9 @@ namespace MovieProjectClient
 
         public static string FrontEnd()
         {
-            Menu.DisplayBox("Cinema Listings App", 11);
+            DisplayBox("Cinema Listings App", 11);
 
-            string[] menuMain = new string[]
+            List<string> menuMain = new List<string>()
             {
                 "[C] Local Cinema Index",
                 "[M] Now Showing",
@@ -28,21 +27,10 @@ namespace MovieProjectClient
                 "[X] Quit App"
             };
 
-            foreach (string option in menuMain)
-            {
-                Console.WriteLine(option);
-            }
+            DisplayOptions(menuMain);
 
-            // User button input taken as ConsoleKeyInfo object - Key property is always Upper(case) value
-            Console.Write("\n\t");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Press a key to select an option: ");
-            Console.ResetColor();
-            ConsoleKeyInfo choice = Console.ReadKey(true);
-
-            return (choice.Key.ToString());
+            return(UserKeyInput("CMFSGX", 11));
         }
-
 
         public delegate int UserInputMethod(int range);
 
@@ -102,7 +90,7 @@ namespace MovieProjectClient
                 string choice = Console.ReadLine();
                 isNum = Int32.TryParse(choice, out num);                        //safer way of parsing number from string
                 Console.SetCursorPosition(origCol, origRow);
-                Console.Write("                          ");
+                Console.Write(new string(' ', choice.Length));
                 Console.SetCursorPosition(origCol, origRow);
             } while ((num < 1 || num > range) || !isNum);
 
@@ -110,6 +98,24 @@ namespace MovieProjectClient
             return (num - 1);
         }
 
+        public static string UserKeyInput(string range, int colour)
+        {
+            // User button input taken as ConsoleKeyInfo object - letter Key property is always Upper(case) value
+            Console.ForegroundColor = (ConsoleColor)colour;
+            Console.Write("\n\tPress a key to select an option: ");
+            string choice = "";
+            do
+            {
+                ConsoleKeyInfo press = Console.ReadKey(true);
+                if (range.Contains(press.Key.ToString()))
+                {
+                    choice = press.Key.ToString();
+                }
+            } while (choice == "");            
+            Console.ResetColor();
+            Console.WriteLine(choice);
+            return (choice);
+        }
 
         public static string UserTextInput(string query, int colour)
         {
@@ -142,7 +148,15 @@ namespace MovieProjectClient
                 int range = entries.Count();
                 for (int i = 0; i < range; i++)
                 {
-                    Console.WriteLine("[{0}] {1}", i + 1, entries[i]);
+                    if (entries[i][0].ToString() == "[")                     // checks if List already has numbering / letters
+                    {
+                        Console.WriteLine(entries[i]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("[{0}] {1}", i + 1, entries[i]);
+                    }
+                       
                 }
             }
         }
@@ -516,9 +530,9 @@ namespace MovieProjectClient
             bool IsUsing = true;
             do
             {
-                string input = Menu.FrontEnd();
-                RunAsync(input).Wait();
-                if (input == "X")
+                string choice = Menu.FrontEnd();
+                RunAsync(choice).Wait();
+                if (choice == "X")
                 {
                     IsUsing = false;
                 }
@@ -546,8 +560,8 @@ namespace MovieProjectClient
                     break;
 
                 case "F":
-                    Menu.DisplayBox("Find a venue", 11);
-                    string cSearch = Menu.UserTextInput("Please enter a search term for the cinema: ", 11);
+                    Menu.DisplayBox("Find a venue", 6);
+                    string cSearch = Menu.UserTextInput("Please enter a search term for the cinema: ", 6);
                     GetCinemasBySearchAsync(cSearch).Wait();
                     break;
 
@@ -570,9 +584,10 @@ namespace MovieProjectClient
                     Console.WriteLine("Quitting application...");
                     break;
             }
-            Console.ReadLine();
+            Console.WriteLine("\n");
+            Console.ReadKey(true);
         }
     }
 }
 
-// Maintainability Index 87 (Green), Cyclo Complexity 75, Inheritance Depth 1, Class Coupling 36
+// Maintainability Index 87 (Green), Cyclo Complexity 78, Inheritance Depth 1, Class Coupling 36

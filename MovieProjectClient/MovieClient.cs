@@ -332,7 +332,7 @@ namespace MovieProjectClient
                             string cert = s.Certification.ToString().Substring("IFCO".Length);
                             string showtime = s.ShowTime.ToString().Remove(5);
                             Console.Write("[" + i + "] " + s.Title + "\tRating: " + cert + " \tNext screening " + showtime + "\n");
-                            //Console.WriteLine("\t Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
+                            
                         }
                     }
                     else

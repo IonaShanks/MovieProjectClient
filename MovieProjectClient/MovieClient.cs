@@ -29,7 +29,7 @@ namespace MovieProjectClient
 
             DisplayOptions(menuMain);
 
-            return(UserKeyInput("CMFSGX", 11));
+            return (UserKeyInput("CMFSGX", 11));
         }
 
         public delegate int UserInputMethod(int range);
@@ -111,7 +111,7 @@ namespace MovieProjectClient
                 {
                     choice = press.Key.ToString();
                 }
-            } while (choice == "");            
+            } while (choice == "");
             Console.ResetColor();
             Console.WriteLine(choice);
             return (choice);
@@ -156,7 +156,7 @@ namespace MovieProjectClient
                     {
                         Console.WriteLine("[{0}] {1}", i + 1, entries[i]);
                     }
-                       
+
                 }
             }
         }
@@ -164,7 +164,7 @@ namespace MovieProjectClient
 
     class Client
     {
-        // GET to list all Cinemas 
+        // GET to list all Cinemas
         static async Task<List<string>> GetAllCinemasAsync()
         {
             List<string> idstring = new List<string>();
@@ -173,16 +173,16 @@ namespace MovieProjectClient
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");   // change for connection string
+                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");                             // base URL for API Controller i.e. RESTFul service
 
                     // add an Accept header for JSON
                     client.DefaultRequestHeaders.
                         Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // GET ../api/Cinemas - annotation in controller shorthands route to ../Cinemas/
+                    // GET ../api/Cinemas
                     // get all Cinema venues
-                    HttpResponseMessage response = await client.GetAsync("Cinemas/");                  //  await suspends processing until async call result available (tends to hang on first query / connection)           
-                    if (response.IsSuccessStatusCode)                                                   // are we getting an HTTP return code of 200, 201 etc?
+                    HttpResponseMessage response = await client.GetAsync("Cinemas/");                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result
                         Menu.DisplayBox("Local Cinema Index", 11);
@@ -216,16 +216,16 @@ namespace MovieProjectClient
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/"); 
+                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");                             // base URL for API Controller i.e. RESTFul service
 
                     // add an Accept header for JSON
                     client.DefaultRequestHeaders.
                         Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // GET ../api/Cinemas/id shorthand to /Cinemas/id
+                    // GET ../api/Cinemas/id
                     // get a particular Cinema
-                    HttpResponseMessage response = await client.GetAsync("Cinemas/" + id);                  // will await here            
-                    if (response.IsSuccessStatusCode)                                                   // 200-299 is true
+                    HttpResponseMessage response = await client.GetAsync("Cinemas/" + id);                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result
                         Menu.DisplayBox("Cinema Details", 11);
@@ -260,7 +260,7 @@ namespace MovieProjectClient
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");   
+                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");                             // base URL for API Controller i.e. RESTFul service
 
                     // add an Accept header for JSON
                     client.DefaultRequestHeaders.
@@ -268,8 +268,8 @@ namespace MovieProjectClient
 
                     // GET ../api/Cinemas
                     // get all venues
-                    HttpResponseMessage response = await client.GetAsync("Cinemas/Search/" + id);                  // await search results before proceeding           
-                    if (response.IsSuccessStatusCode)                                                   // 200-299 means HTTP get was success
+                    HttpResponseMessage response = await client.GetAsync("Cinemas/Search/" + id);                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
                         Menu.DisplayBox("Cinema Search", 6);
@@ -286,16 +286,16 @@ namespace MovieProjectClient
                         }
                         else
                         {
-                            Console.WriteLine("No match found");                                        // HTTP get was success, so empty list returned = no  match
+                            Console.WriteLine("No match found");
                         }
                     }
                     else
                     {
-                        Console.WriteLine(response.StatusCode + " " + response.ReasonPhrase);           // HTTP get failed, so don't try to write null list 
+                        Console.WriteLine(response.StatusCode + " " + response.ReasonPhrase);
                     }
                 }
             }
-            catch (Exception e)                                                                         // some other error thrown we need to know
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
@@ -318,8 +318,8 @@ namespace MovieProjectClient
 
                     // GET ../api/Movies
                     // get all movie screenings
-                    HttpResponseMessage response = await client.GetAsync("Movies/");                  // async return awaited         
-                    if (response.IsSuccessStatusCode)                                                   // 200-299 = true
+                    HttpResponseMessage response = await client.GetAsync("Movies/");                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
                         Menu.DisplayBox("Movies Showing This Week", 6);
@@ -332,7 +332,7 @@ namespace MovieProjectClient
                             string cert = s.Certification.ToString().Substring("IFCO".Length);
                             string showtime = s.ShowTime.ToString().Remove(5);
                             Console.Write("[" + i + "] " + s.Title + "\tRating: " + cert + " \tNext screening " + showtime + "\n");
-                            //Console.WriteLine("\t Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
+                            
                         }
                     }
                     else
@@ -355,16 +355,16 @@ namespace MovieProjectClient
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");      
+                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");                             // base URL for API Controller i.e. RESTFul service
 
                     // add an Accept header for JSON
                     client.DefaultRequestHeaders.
                         Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // GET ../api/Movies/Screenings/id shorthanded to remove api/
+                    // GET ../api/Movies/Screenings/id
                     // get single movie screenings
-                    HttpResponseMessage response = await client.GetAsync("Movies/Screenings/" + id);                  // async call, await result            
-                    if (response.IsSuccessStatusCode)                                                   // 200 - 299 = true
+                    HttpResponseMessage response = await client.GetAsync("Movies/Screenings/" + id);                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
                         Console.WriteLine("\nThis movie is currently showing at...");
@@ -393,26 +393,24 @@ namespace MovieProjectClient
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/"); 
+                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");                             // base URL for API Controller locally *adjust for Azure*
 
                     // add an Accept header for JSON
                     client.DefaultRequestHeaders.
                         Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // GET ../api/Movies/id shorthanded to remove /api in annotation
+                    // GET ../api/Movies/id
                     // get a particular Movie
-                    HttpResponseMessage response = await client.GetAsync("Movies/" + id);                  // hangs here until response            
-                    if (response.IsSuccessStatusCode)                                                   // 200-299?
+                    HttpResponseMessage response = await client.GetAsync("Movies/" + id);                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result
                         var s = await response.Content.ReadAsAsync<Movie>();
                         Menu.DisplayBox(s.Title, 11);
-                        string cert = "Certificate: " + s.Certification.ToString().Substring("IFCO".Length);    // remove 'IFCO' from enum name
-                        string showtime = s.ShowTime.ToString().Remove(5);                                      // quick and dirty fudge to format a TimeSpan type to first 5 chars
+                        string cert = "Certificate: " + s.Certification.ToString().Substring("IFCO".Length);
+                        string showtime = s.ShowTime.ToString().Remove(5);
                         Console.WriteLine(cert + "   Genre: " + s.Genre.ToString());
                         Console.WriteLine("\n" + s.Description + " \n");
-                        // NB following line worked on localhost but not on Azure (JSIgnore issue)
-                        //Console.Write("Now showing at {0} Cinema{1}. ", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                         Console.WriteLine("Program starts " + showtime + ". Running Time: " + s.RunTime + " mins.\n");
                         Console.WriteLine(s.MovieNow(s.ShowTime));
                     }
@@ -428,7 +426,7 @@ namespace MovieProjectClient
             }
 
             // call screenings before returning
-            Console.ForegroundColor = ConsoleColor.DarkCyan;            // hardcoding bad, ruins code metrics, consider parameter pass / structure
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
             GetMovieScreenings(id).Wait();
             Console.ResetColor();
         }
@@ -447,18 +445,18 @@ namespace MovieProjectClient
                         Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     string g = id.ToString();
-                    HttpResponseMessage response = await client.GetAsync("Movies/Genre/" + g);          // have to turn enum to str to place in URI
-                    if (response.IsSuccessStatusCode)                                                   // 200-299 true
+                    HttpResponseMessage response = await client.GetAsync("Movies/Genre/" + g);
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
-                        Menu.DisplayBox("Movies by Genre: " + Enum.GetName(typeof(Genre), id), 6);                        // also =Enum.GetName(typeof(Genre), g) instead of ToString()
+                        Menu.DisplayBox("Movies by Genre: " + Enum.GetName(typeof(Genre), id), 6);                        // also =Enum.GetName(typeof(Genre), g) or 
                         var gens = await response.Content.ReadAsAsync<IEnumerable<Movie>>();
                         foreach (var s in gens)
                         {
                             string cert = s.Certification.ToString().Substring("IFCO".Length);
                             string showtime = s.ShowTime.ToString().Remove(5);
                             Console.WriteLine("Movie: " + s.Title + " " + cert + " " + showtime + " ");
-                            //Console.WriteLine(" Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
+
                         }
                     }
                     else
@@ -480,15 +478,16 @@ namespace MovieProjectClient
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");
+                    client.BaseAddress = new Uri("https://microsoft-apiappd00b15bde6604da799ccb333b729c3a2.azurewebsites.net/");                             // base URL for API Controller i.e. RESTFul service
 
                     // add an Accept header for JSON
                     client.DefaultRequestHeaders.
                         Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // GET ../api/Movies/TitleSearch/{id]  
-                    HttpResponseMessage response = await client.GetAsync("Movies/Titlesearch/" + id);                  // async call           
-                    if (response.IsSuccessStatusCode)                                                                 // 200-299 true
+                    // GET ../api/Movies
+                    // get all movie screenings
+                    HttpResponseMessage response = await client.GetAsync("Movies/Titlesearch/" + id);                  // async call, await suspends until result available            
+                    if (response.IsSuccessStatusCode)                                                   // 200..299
                     {
                         // read result into iterable IEnumerable
                         Menu.DisplayBox("Movie Search for '" + id + "'", 6);
@@ -502,7 +501,6 @@ namespace MovieProjectClient
                                 string cert = s.Certification.ToString().Substring("IFCO".Length);
                                 string showtime = s.ShowTime.ToString().Remove(5);
                                 Console.WriteLine("Movie: " + s.Title + "\tRating: " + cert + " \tNext screening " + showtime);
-                                //Console.WriteLine("\t Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                             }
                         }
                         else

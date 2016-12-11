@@ -16,9 +16,9 @@ namespace MovieModel
         public String PhoneNumber { get; set; }
         [Display(Name = "Ticket Price")]
         public String TicketPrice { get; set; }
-        
 
 
+        //Forign key from the Movie table
         public String MovieID { get; set; }
         public virtual Movie Movies { get; set; }
     }

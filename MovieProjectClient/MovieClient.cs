@@ -29,7 +29,7 @@ namespace MovieProjectClient
 
             DisplayOptions(menuMain);
 
-            return(UserKeyInput("CMFSGX", 11));
+            return (UserKeyInput("CMFSGX", 11));
         }
 
         public delegate int UserInputMethod(int range);
@@ -111,7 +111,7 @@ namespace MovieProjectClient
                 {
                     choice = press.Key.ToString();
                 }
-            } while (choice == "");            
+            } while (choice == "");
             Console.ResetColor();
             Console.WriteLine(choice);
             return (choice);
@@ -156,7 +156,7 @@ namespace MovieProjectClient
                     {
                         Console.WriteLine("[{0}] {1}", i + 1, entries[i]);
                     }
-                       
+
                 }
             }
         }
@@ -411,7 +411,6 @@ namespace MovieProjectClient
                         string showtime = s.ShowTime.ToString().Remove(5);
                         Console.WriteLine(cert + "   Genre: " + s.Genre.ToString());
                         Console.WriteLine("\n" + s.Description + " \n");
-                        //Console.Write("Now showing at {0} Cinema{1}. ", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                         Console.WriteLine("Program starts " + showtime + ". Running Time: " + s.RunTime + " mins.\n");
                         Console.WriteLine(s.MovieNow(s.ShowTime));
                     }
@@ -457,7 +456,7 @@ namespace MovieProjectClient
                             string cert = s.Certification.ToString().Substring("IFCO".Length);
                             string showtime = s.ShowTime.ToString().Remove(5);
                             Console.WriteLine("Movie: " + s.Title + " " + cert + " " + showtime + " ");
-                            //Console.WriteLine(" Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
+
                         }
                     }
                     else
@@ -502,7 +501,6 @@ namespace MovieProjectClient
                                 string cert = s.Certification.ToString().Substring("IFCO".Length);
                                 string showtime = s.ShowTime.ToString().Remove(5);
                                 Console.WriteLine("Movie: " + s.Title + "\tRating: " + cert + " \tNext screening " + showtime);
-                                //Console.WriteLine("\t Now showing at {0} Cinema{1}", s.Cinemas.Count, (s.Cinemas.Count == 1 ? "" : "s"));
                             }
                         }
                         else

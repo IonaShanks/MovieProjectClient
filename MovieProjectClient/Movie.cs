@@ -46,6 +46,8 @@ namespace MovieModel
         [Required, Display(Name = "Run Time")]
         // Minutes
         public double RunTime { get; set; }
+
+        //Show time is based on genre, different genres and shown at different times as outlined in the if statement
         [Display(Name = "Show Time")]
         public TimeSpan ShowTime
         {
@@ -93,7 +95,7 @@ namespace MovieModel
 
         }
 
-        //compare times for showings
+        //Compares time now to show time to display when the next showing of the movie is
         public string MovieNow(TimeSpan ShowTime)
         {
             int compareValue = ShowTime.CompareTo(DateTime.Now.TimeOfDay);
